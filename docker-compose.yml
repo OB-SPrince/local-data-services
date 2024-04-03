@@ -1,41 +1,14 @@
 version: '3.8'
 
 services:
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-    networks:
-      - backend
-
-  app:
-    build: ./app
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./app:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      NODE_ENV: development
-    command: npm start
-    depends_on:
-      - postgres
-      - mongo
-      - redis
-    networks:
-      - backend
-
   redis:
     image: redis:latest
     volumes:
       - redis-data:/data
+    ports:
+      - 6379:6379
     networks:
-      - backend
+      - data
 
   postgres:
     image: postgres:latest
@@ -45,8 +18,10 @@ services:
       POSTGRES_DB: dbname
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
-      - backend
+      - data
 
   mongo:
     image: mongo:latest
@@ -55,20 +30,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - mongo-data:/data/db
-    networks:
-      - backend
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
-    depends_on:
-      - postgres
+      - "27017:27017"
     networks:
-      - backend
+      - data
 
 volumes:
   redis-data:
@@ -76,4 +41,4 @@ volumes:
   mongo-data:
 
 networks:
-  backend:
+  data:
