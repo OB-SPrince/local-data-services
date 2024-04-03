@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   redis:
+    #image: redis:6.2.6 # Specific version
     image: redis:latest
     volumes:
       - redis-data:/data
@@ -9,8 +10,14 @@ services:
       - 6379:6379
     networks:
       - data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
+    #image: postgres:13.3 # Specific version
     image: postgres:latest
     environment:
       POSTGRES_USER: user
@@ -22,8 +29,16 @@ services:
       - "5432:5432"
     networks:
       - data
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d dbname"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongo:
+    #image: mongo:4.4.6 # Specific version
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: user
@@ -34,6 +49,14 @@ services:
       - "27017:27017"
     networks:
       - data
+    depends_on:
+      - redis
+      - postgres
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   redis-data:
@@ -42,3 +65,4 @@ volumes:
 
 networks:
   data:
+    driver: bridge
