@@ -65,3 +65,14 @@ cp ~/repos/local-data-services/aws-ec2/api_tokens.yml ~/repos/tabbyAPI/
 python main.py
 #sudo apt dist-upgrade -y
 ```
+
+```bash
+curl http://inference.ca.obenv.net:5000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-someshit" \
+  -d '{
+     "model": "gpt-3.5-turbo",
+     "messages": [{"role": "user", "content": "Holy shit mother fucker! This is an inference test!"}],
+     "temperature": 0.7
+   }'
+```
