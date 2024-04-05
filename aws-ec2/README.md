@@ -1,6 +1,28 @@
-# ads
+# installing basic inference
+
+Specifications:
+
+- EC2 `g5.xlarge` instance
+- EBS `gp3` volume of 64GiB (root)
+- NVMe volume of 250GiB (hf_models)
+
+Potential ec2 user_data script:
 
 ```bash
+# Configure local filesystem
+export APP_HOME=/opt/openbet/inference
+echo "APP_HOME=\"/opt/openbet/inference\"" | sudo tee -a /etc/environment
+sudo mkdir -p ${APP_HOME}
+sudo mkdir -p ${APP_HOME}/hf_models ${APP_HOME}/repos
+sudo chown -R ubuntu:ubuntu ${APP_HOME}/hf_models ${APP_HOME}/repos
+# Make models directory
+sudo file -s /dev/nvme1n1
+sudo mkfs -t xfs /dev/nvme1n1
+sudo mount /dev/nvme1n1 ${APP_HOME}/hf_models
+sudo chown ubuntu:ubuntu ${APP_HOME}/hf_models
+UUID=$(blkid -s UUID -o value /dev/nvme1n1)
+echo "UUID=${UUID} ${APP_HOME}/hf_models xfs defaults,nofail  0 2" | sudo tee -a /etc/fstab
+# Update system
 sudo apt update
 sudo add-apt-repository -y universe
 sudo add-apt-repository -y multiverse
@@ -19,17 +41,18 @@ sudo apt-get install -y \
     ubuntu-drivers-common \
     python-is-python3 \
     pkg-config 
-
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
+# Setup NVIDIA hardware
+wget https://developer.download.nvidia.com/compute/cuda${APP_HOME}/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt-get update
 sudo ubuntu-drivers install --gpgpu nvidia:550-server
 sudo apt install cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server
-#sudo reboot
-#sudo apt dist-upgrade -y
+sudo reboot
+```
 
+```bash
 # Get python configured
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
 pip install --upgrade pip
 curl https://pyenv.run | bash
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
@@ -39,26 +62,19 @@ source .bashrc
 pyenv update
 pyenv install 3.11
 pyenv local 3.11
-# Make temp dirctory
-sudo file -s /dev/nvme1n1
-sudo mkfs -t xfs /dev/nvme1n1 -f
-sudo mkdir /hf_temp
-sudo mount /dev/nvme1n1 /hf_temp
-sudo chown ubuntu:ubuntu /hf_temp
-# Make models directory
-sudo file -s /dev/nvme2n1
-sudo mkfs -t xfs /dev/nvme2n1 -f
-sudo mkdir /hf_models
-sudo mount /dev/nvme2n1 /hf_models
-sudo chown ubuntu:ubuntu /hf_models
+```
+
+```bash
 # Download default model
-cd /hf_models
+cd ${APP_HOME}/hf_models
 git lfs install
 git clone https://huggingface.co/cognitivecomputations/dolphin-2.8-mistral-7b-v02
-rm -rf /hf_models/dolphin-2.8-mistral-7b-v02/.git
-# Download local data services
-mkdir repos
-cd repos
+rm -rf ${APP_HOME}/hf_models/dolphin-2.8-mistral-7b-v02/.git
+```
+
+```bash
+# Install local data services
+cd ${APP_HOME}/repos
 git clone https://github.com/OB-SPrince/local-data-services.git
 git clone https://github.com/theroyallab/tabbyAPI.git
 cd tabbyAPI
@@ -67,13 +83,13 @@ source ~/venv-tabbyapi/bin/activate
 pip install --upgrade pip
 pip install wheel packages
 pip install -U .[cu121]
-cp ~/repos/local-data-services/aws-ec2/config.yml ~/repos/tabbyAPI/
-cp ~/repos/local-data-services/aws-ec2/api_tokens.yml ~/repos/tabbyAPI/
+cp ${APP_HOME}/repos/local-data-services/aws-ec2/config.yml ${APP_HOME}/repos/tabbyAPI/
+cp ${APP_HOME}/repos/local-data-services/aws-ec2/api_tokens.yml ${APP_HOME}/repos/tabbyAPI/
 deactivate
 ```
 
 ```bash
-cd ~/repos/tabbyAPI
+cd ${APP_HOME}/repos/tabbyAPI
 source ~/venv-tabbyapi/bin/activate
 python main.py
 deactivate
