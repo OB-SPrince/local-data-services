@@ -2,9 +2,11 @@
 
 Specifications:
 
-- EC2 `g5.xlarge` instance
+- EC2 `g5.xlarge` instance, `g5.2xlarge` for production
+- EC2 NVMe volume of 250GiB (hf_models)
 - EBS `gp3` volume of 64GiB (root)
-- NVMe volume of 250GiB (hf_models)
+- NVIDIA a10g 24GB GPU, Compute rev. 8.6, CUDA 12.x compatible
+- Ubuntu Linux 22.04-server
 
 Potential ec2 user_data script:
 
