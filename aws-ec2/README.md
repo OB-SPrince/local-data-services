@@ -33,19 +33,18 @@ sudo apt-get install -y \
     zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev liblzma-dev \
     curl \
     ca-certificates \
-    python3.11-full \
+    python3-full \
     python3-pip \
     python3-venv \
     python3-wheel \
     git git-lfs wget unzip zip \
     ubuntu-drivers-common \
     python-is-python3 \
-    pkg-config 
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
+    pkg-config
 # Setup NVIDIA hardware
-wget https://developer.download.nvidia.com/compute/cuda${APP_HOME}/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
-sudo apt-get update
+sudo apt update
 sudo ubuntu-drivers install --gpgpu nvidia:550-server
 sudo apt install cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server
 sudo reboot
