@@ -59,8 +59,8 @@ git lfs install
 git clone https://huggingface.co/cognitivecomputations/dolphin-2.8-mistral-7b-v02
 rm -rf /hf_models/dolphin-2.8-mistral-7b-v02/.git
 cd ~/repos/tabbyAPI
-
-#cp ~/repos/local-data-services/aws-ec2/config.yml ~/repos/tabbyAPI/
+cp ~/repos/local-data-services/aws-ec2/config.yml ~/repos/tabbyAPI/
+cp ~/repos/local-data-services/aws-ec2/api_tokens.yml ~/repos/tabbyAPI/
 
 python main.py
 #sudo apt dist-upgrade -y
