@@ -71,7 +71,7 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-someshit" \
   -d '{
-     "model": "gpt-3.5-turbo",
+     "model": "not-required",
      "messages": [{"role": "user", "content": "Holy wow, my cool AI friend from the future! This is an inference test!"}],
      "temperature": 0.7
    }'
