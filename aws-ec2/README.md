@@ -27,7 +27,8 @@ sudo ubuntu-drivers install --gpgpu nvidia:550-server
 sudo apt install cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server
 #sudo reboot
 #sudo apt dist-upgrade -y
-#sudo reboot
+
+# Get python configured
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
 pip install --upgrade pip
 curl https://pyenv.run | bash
@@ -38,6 +39,24 @@ source .bashrc
 pyenv update
 pyenv install 3.11
 pyenv local 3.11
+# Make temp dirctory
+sudo file -s /dev/nvme1n1
+sudo mkfs -t xfs /dev/nvme1n1 -f
+sudo mkdir /hf_temp
+sudo mount /dev/nvme1n1 /hf_temp
+sudo chown ubuntu:ubuntu /hf_temp
+# Make models directory
+sudo file -s /dev/nvme2n1
+sudo mkfs -t xfs /dev/nvme2n1 -f
+sudo mkdir /hf_models
+sudo mount /dev/nvme2n1 /hf_models
+sudo chown ubuntu:ubuntu /hf_models
+# Download default model
+cd /hf_models
+git lfs install
+git clone https://huggingface.co/cognitivecomputations/dolphin-2.8-mistral-7b-v02
+rm -rf /hf_models/dolphin-2.8-mistral-7b-v02/.git
+# Download local data services
 mkdir repos
 cd repos
 git clone https://github.com/OB-SPrince/local-data-services.git
@@ -48,22 +67,16 @@ source ~/venv-tabbyapi/bin/activate
 pip install --upgrade pip
 pip install wheel packages
 pip install -U .[cu121]
-#mkdir ~/hf_models
-sudo file -s /dev/nvme1n1
-sudo mkfs -t xfs /dev/nvme1n1 -f
-sudo mkdir /hf_models
-sudo mount /dev/nvme1n1 /hf_models
-sudo chown ubuntu:ubuntu /hf_models
-cd /hf_models
-git lfs install
-git clone https://huggingface.co/cognitivecomputations/dolphin-2.8-mistral-7b-v02
-rm -rf /hf_models/dolphin-2.8-mistral-7b-v02/.git
-cd ~/repos/tabbyAPI
 cp ~/repos/local-data-services/aws-ec2/config.yml ~/repos/tabbyAPI/
 cp ~/repos/local-data-services/aws-ec2/api_tokens.yml ~/repos/tabbyAPI/
+deactivate
+```
 
+```bash
+cd ~/repos/tabbyAPI
+source ~/venv-tabbyapi/bin/activate
 python main.py
-#sudo apt dist-upgrade -y
+deactivate
 ```
 
 ```bash
