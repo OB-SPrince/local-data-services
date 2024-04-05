@@ -1,0 +1,90 @@
+network:
+  host: 0.0.0.0
+  port: 5000
+  disable_auth: True
+
+logging:
+  prompt: False
+  generation_params: False
+
+sampling:
+  # Override preset name. Find this in the sampler-overrides folder (default: None)
+  # This overrides default fallbacks for sampler values that are passed to the API
+  # Server-side overrides are NOT needed by default
+  # WARNING: Using this can result in a generation speed penalty
+  #override_preset: 
+
+# Options for development and experimentation
+developer:
+  # Skips exllamav2 version check (default: False)
+  # It's highly recommended to update your dependencies rather than enabling this flag
+  # WARNING: Don't set this unless you know what you're doing!
+  #unsafe_launch: False
+
+  # Disable all request streaming (default: False)
+  # A kill switch for turning off SSE in the API server
+  #disable_request_streaming: False
+
+  # Enable the torch CUDA malloc backend (default: False)
+  # This can save a few MBs of VRAM, but has a risk of errors. Use at your own risk.
+  #cuda_malloc_backend: False
+
+model:
+  model_dir: /hf_models
+  #model_name: /data/Suparious_dolphin-mixtral-2x7b-dpo-laser-exl2
+  model_name: dolphin-2.8-mistral-7b-v02
+  #use_dummy_models: False
+  #max_seq_len:
+  #override_base_seq_len:
+  gpu_split_auto: True
+  autosplit_reserve: [96]
+  #gpu_split: [20.6, 24]
+  #rope_scale: 1.0
+  #rope_alpha: 1.0
+  no_flash_attention: False
+  cache_mode: FP16
+
+  # Set the prompt template for this model. If empty, chat completions will be disabled. (default: Empty)
+  # NOTE: Only works with chat completion message lists!
+  #prompt_template:
+
+  # Number of experts to use PER TOKEN. Fetched from the model's config.json if not specified (default: Empty)
+  # WARNING: Don't set this unless you know what you're doing!
+  # NOTE: For MoE models (ex. Mixtral) only!
+  #num_experts_per_token:
+
+  # Enables CFG support (default: False)
+  # WARNING: This flag disables Flash Attention! (a stopgap fix until it's fixed in upstream)
+  #use_cfg: False
+
+  # Enables fasttensors to possibly increase model loading speeds (default: False)
+  fasttensors: true
+
+  # Options for draft models (speculative decoding). This will use more VRAM!
+  #draft:
+    # Overrides the directory to look for draft (default: models)
+    #draft_model_dir: models
+
+    # An initial draft model to load. Make sure this model is located in the model directory!
+    # A draft model can be loaded later via the API.
+    #draft_model_name: A model name
+  
+    # Rope scale for draft models (default: 1.0)
+    # Same thing as compress_pos_emb
+    # Only use if your draft model was trained on long context with rope (check config.json)
+    #draft_rope_scale: 1.0
+
+    # Rope alpha for draft model (default: 1.0)
+    # Same thing as alpha_value
+    # Leave blank to automatically calculate alpha value
+    #draft_rope_alpha: 1.0
+  
+  # Options for loras
+  #lora:
+    # Overrides the directory to look for loras (default: loras)
+    #lora_dir: loras
+    
+    # List of loras to load and associated scaling factors (default: 1.0). Comment out unused entries or add more rows as needed.
+    #loras:
+    #- name: lora1
+    #  scaling: 1.0
