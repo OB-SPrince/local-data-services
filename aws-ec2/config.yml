@@ -30,8 +30,7 @@ developer:
   #cuda_malloc_backend: False
 
 model:
-  model_dir: /hf_models
-  #model_name: /data/Suparious_dolphin-mixtral-2x7b-dpo-laser-exl2
+  model_dir: /opt/openbet/inference/hf_models
   model_name: dolphin-2.8-mistral-7b-v02
   #use_dummy_models: False
   #max_seq_len:
@@ -63,7 +62,7 @@ model:
   # Options for draft models (speculative decoding). This will use more VRAM!
   #draft:
     # Overrides the directory to look for draft (default: models)
-    #draft_model_dir: models
+    #draft_model_dir: /opt/openbet/inference/local_models
 
     # An initial draft model to load. Make sure this model is located in the model directory!
     # A draft model can be loaded later via the API.
@@ -82,7 +81,7 @@ model:
   # Options for loras
   #lora:
     # Overrides the directory to look for loras (default: loras)
-    #lora_dir: loras
+    #lora_dir: /opt/openbet/inference/loras
     
     # List of loras to load and associated scaling factors (default: 1.0). Comment out unused entries or add more rows as needed.
     #loras:
