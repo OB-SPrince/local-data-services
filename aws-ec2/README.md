@@ -103,7 +103,25 @@ python -m vllm.entrypoints.openai.api_server \
 --dtype float32 \
 --api-key token-abc123 \
 --swap-space 24 \
---gpu-memory-utilization 1 \
+--worker-use-ray \
+--tensor-parallel-size 4
+
+deactivate
+```
+
+## Running vLLM multi-GPU
+
+```bash
+source ~/venv-vllm/bin/activate
+python -m vllm.entrypoints.openai.api_server \
+--port 5000 \
+--download-dir /opt/openbet/inference/hf_models \
+--model NousResearch/Hermes-2-Pro-Mistral-7B \
+--tokenizer NousResearch/Hermes-2-Pro-Mistral-7B \
+--tokenizer-mode auto \
+--dtype float32 \
+--api-key token-abc123 \
+--swap-space 24 \
 --worker-use-ray \
 --tensor-parallel-size 4
 
