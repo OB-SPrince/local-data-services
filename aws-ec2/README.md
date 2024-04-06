@@ -67,11 +67,6 @@ cd ${APP_HOME}/repos
 pyenv local 3.11
 python -m venv ~/venv-vllm
 source ~/venv-vllm/bin/activate
-#pip install wheel packages
-#git clone https://github.com/vllm-project/vllm.git
-#cd vllm
-#export MAX_JOBS=4
-#pip install -e .  # This may take 5-10 minutes.
 pip install vllm
 pip install wheel flash-attn --no-build-isolation
 deactivate
