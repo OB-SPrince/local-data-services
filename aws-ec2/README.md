@@ -67,8 +67,8 @@ cd ${APP_HOME}/repos
 pyenv local 3.11
 python -m venv ~/venv-vllm
 source ~/venv-vllm/bin/activate
-pip install vllm
-pip install wheel flash-attn --no-build-isolation
+pip install vllm wheel
+MAX_JOBS=4 pip install flash-attn --no-build-isolation
 deactivate
 ```
 
@@ -87,6 +87,26 @@ python -m vllm.entrypoints.openai.api_server \
 --swap-space 24 \
 --gpu-memory-utilization 0.98 \
 --max-model-len 31104
+deactivate
+```
+
+## Running vLLM multi-GPU
+
+```bash
+source ~/venv-vllm/bin/activate
+python -m vllm.entrypoints.openai.api_server \
+--port 5000 \
+--download-dir /opt/openbet/inference/hf_models \
+--model cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
+--tokenizer cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
+--tokenizer-mode auto \
+--dtype float32 \
+--api-key token-abc123 \
+--swap-space 24 \
+--gpu-memory-utilization 1 \
+--worker-use-ray \
+--tensor-parallel-size 4
+
 deactivate
 ```
 
