@@ -106,3 +106,50 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
      "temperature": 0.7
    }'
 ```
+
+## vLLM alternative
+
+```bash
+cd ${APP_HOME}/repos
+pyenv local 3.11
+python -m venv ~/venv-vllm
+source ~/venv-vllm/bin/activate
+#pip install wheel packages
+#git clone https://github.com/vllm-project/vllm.git
+#cd vllm
+#export MAX_JOBS=4
+#pip install -e .  # This may take 5-10 minutes.
+pip install vllm
+pip install wheel flash-attn --no-build-isolation
+deactivate
+```
+
+## Run the server
+
+```bash
+cd ${APP_HOME}/repos/vllm
+source ~/venv-vllm/bin/activate
+python -m vllm.entrypoints.openai.api_server \
+--port 5000 \
+--model /opt/openbet/inference/hf_models/dolphin-2.8-mistral-7b-v02 \
+--tokenizer /opt/openbet/inference/hf_models/dolphin-2.8-mistral-7b-v02 \
+--tokenizer-mode auto \
+--dtype bfloat16 \
+--api-key token-abc123 \
+--swap-space 4 \
+--max-model-len 16384
+deactivate
+```
+
+## Run the tests
+
+```bash
+curl http://inference.ca.obenv.net:5000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer token-abc123" \
+  -d '{
+     "model": "/opt/openbet/inference/hf_models/dolphin-2.8-mistral-7b-v02",
+     "messages": [{"role": "user", "content": "Holy wow, my cool AI friend from the future! This is an inference test!"}],
+     "temperature": 0.7
+   }'
+```
