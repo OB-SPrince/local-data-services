@@ -109,7 +109,7 @@ python -m vllm.entrypoints.openai.api_server \
 deactivate
 ```
 
-## Running vLLM multi-GPU
+## Running vLLM multi-GPU Hermes
 
 ```bash
 source ~/venv-vllm/bin/activate
