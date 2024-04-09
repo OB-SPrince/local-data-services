@@ -43,3 +43,11 @@ curl --location "https://api.mistral.ai/v1/embeddings" \
   }'
 ```
 
+## Groq
+
+```bash
+curl -X POST "https://api.groq.com/openai/v1/chat/completions" \
+     -H "Authorization: Bearer $GROQ_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"messages": [{"role": "user", "content": "Explain the importance of low latency LLMs"}], "model": "mixtral-8x7b-32768"}'
+```
