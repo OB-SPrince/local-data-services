@@ -15,3 +15,31 @@
 }'
 ```
 
+## Mistral AI
+
+Chat Completions:
+
+```bash
+curl --location "https://api.mistral.ai/v1/chat/completions" \
+     --header 'Content-Type: application/json' \
+     --header 'Accept: application/json' \
+     --header "Authorization: Bearer $MISTRAL_API_KEY" \
+     --data '{
+    "model": "mistral-large-latest",
+    "messages": [{"role": "user", "content": "Who is the most renowned French painter?"}]
+  }'
+```
+
+Embeddings:
+
+```bash
+curl --location "https://api.mistral.ai/v1/embeddings" \
+     --header 'Content-Type: application/json' \
+     --header 'Accept: application/json' \
+     --header "Authorization: Bearer $MISTRAL_API_KEY" \
+     --data '{
+    "model": "mistral-embed",
+    "input": ["Embed this sentence.", "As well as this one."]
+  }'
+```
+
