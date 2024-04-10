@@ -3,7 +3,7 @@
 ## Anthropic Claude
 
 ```bash
-❯ curl https://api.anthropic.com/v1/complete \
+curl https://api.anthropic.com/v1/complete \
      --header "x-api-key: ${ANTHROPIC_API_KEY}" \
      --header "anthropic-version: 2023-06-01" \
      --header "content-type: application/json" \
