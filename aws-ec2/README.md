@@ -11,21 +11,6 @@ Specifications:
 Potential ec2 user_data script:
 
 ```bash
-# Configure local filesystem
-export APP_HOME=/opt/openbet/inference
-echo "APP_HOME=\"/opt/openbet/inference\"" | sudo tee -a /etc/environment
-sudo mkdir -p ${APP_HOME}
-sudo mkdir -p ${APP_HOME}/hf_models ${APP_HOME}/repos
-sudo chown -R ubuntu:ubuntu ${APP_HOME}/hf_models ${APP_HOME}/repos
-
-# Make models directory
-sudo file -s /dev/nvme1n1
-sudo mkfs -t xfs /dev/nvme1n1
-sudo mount /dev/nvme1n1 ${APP_HOME}/hf_models
-sudo chown ubuntu:ubuntu ${APP_HOME}/hf_models
-UUID=$(blkid -s UUID -o value /dev/nvme1n1)
-echo "UUID=${UUID} ${APP_HOME}/hf_models xfs defaults,nofail  0 2" | sudo tee -a /etc/fstab
-
 # Update system
 sudo apt update
 sudo add-apt-repository -y universe
@@ -37,15 +22,16 @@ build-essential ca-certificates ubuntu-drivers-common pkg-config \
 zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev liblzma-dev \
 git git-lfs wget unzip zip btop htop curl \
 python3-full python3-pip python3-venv python3-wheel python-is-python3 \
-
 # Setup NVIDIA hardware
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt update
 sudo ubuntu-drivers install --gpgpu nvidia:550-server
-sudo apt install cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server nvtop
+sudo apt install -y cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server nvtop
 sudo reboot
 ```
+
+## Setup Python environment manager
 
 ```bash
 # Get python configured
@@ -60,7 +46,46 @@ pyenv install 3.11
 pyenv local 3.11
 ```
 
-## vLLM installation
+## Configure local filesystem
+
+```bash
+export APP_HOME=/opt/openbet/inference
+echo "APP_HOME=\"/opt/openbet/inference\"" | sudo tee -a /etc/environment
+sudo mkdir -p ${APP_HOME}
+sudo mkdir -p ${APP_HOME}/hf_models ${APP_HOME}/repos
+sudo chown -R ubuntu:ubuntu ${APP_HOME}/hf_models ${APP_HOME}/repos
+```
+
+## Configure Ephemeral storage
+
+```bash
+#!/bin/bash
+# Make models directory
+sudo file -s /dev/nvme1n1
+sudo mkfs -t xfs /dev/nvme1n1
+sudo mount /dev/nvme1n1 ${APP_HOME}/hf_models
+sudo chown ubuntu:ubuntu ${APP_HOME}/hf_models
+#UUID=$(blkid -s UUID -o value /dev/nvme1n1)
+#echo "UUID=${UUID} ${APP_HOME}/hf_models xfs defaults,nofail  0 2" | sudo tee -a /etc/fstab
+echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+sudo sysctl vm.swappiness=10
+#!/bin/bash
+sudo fallocate -l 512G ${APP_HOME}/hf_models/swapfile
+sudo chmod 600 ${APP_HOME}/hf_models/swapfile
+sudo mkswap ${APP_HOME}/hf_models/swapfile
+sudo swapon ${APP_HOME}/hf_models/swapfile
+```
+
+## Setup repositories
+
+```bash
+cd ${APP_HOME}/repos
+git clone https://github.com/SolidRusT/srt-model-quantizing.git
+git clone https://github.com/SolidRusT/srt-inference-backends.git
+git clone https://github.com/SolidRusT/srt-chat-clients.git
+```
+
+## (optional) vLLM installation
 
 ```bash
 cd ${APP_HOME}/repos
@@ -72,7 +97,7 @@ MAX_JOBS=4 pip install flash-attn --no-build-isolation
 deactivate
 ```
 
-## Running vLLM
+### Running vLLM
 
 ```bash
 source ~/venv-vllm/bin/activate
@@ -90,7 +115,7 @@ python -m vllm.entrypoints.openai.api_server \
 deactivate
 ```
 
-## Running vLLM multi-GPU
+### Running vLLM multi-GPU
 
 ```bash
 source ~/venv-vllm/bin/activate
@@ -109,7 +134,7 @@ python -m vllm.entrypoints.openai.api_server \
 deactivate
 ```
 
-## Running vLLM multi-GPU Hermes
+### Running vLLM multi-GPU Hermes
 
 ```bash
 source ~/venv-vllm/bin/activate
@@ -128,7 +153,7 @@ python -m vllm.entrypoints.openai.api_server \
 deactivate
 ```
 
-## Run the tests
+### Run the tests
 
 ```bash
 curl http://inference.ca.obenv.net:5000/v1/chat/completions \
