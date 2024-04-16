@@ -165,3 +165,13 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
      "temperature": 0.7
    }'
 ```
+
+## (optional) AWQ Model Quantizing pipeline
+
+```bash
+cd ${APP_HOME}/repos/srt-model-quantizing/awq
+screen -S awq
+python -m venv ~/venv-awq
+source ~/venv-awq/bin/activate
+pip install --upgrade -r requirements.txt
+```
