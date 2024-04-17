@@ -181,8 +181,9 @@ ln -s ${APP_HOME}/hf_models/huggingface ${HOME}/.cache/huggingface
 ```
 
 ```bash
+# https://github.com/casper-hansen/AutoAWQ/blob/main/examples/quantize.py
 cd ${APP_HOME}/hf_models
 screen -S awq
 source ~/venv-awq/bin/activate
-
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python run-quant-awq.py
 ```
