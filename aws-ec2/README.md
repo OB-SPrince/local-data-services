@@ -172,7 +172,7 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
 ```bash
 python -m venv ${HOME}/venv-awq
 source ${HOME}/venv-awq/bin/activate
-pip install --upgrade -r requirements.txt
+pip install --upgrade -r ${APP_HOME}/repos/srt-model-quantizing/awq/requirements.txt
 cp ${APP_HOME}/repos/srt-model-quantizing/awq/quant_config.json ${APP_HOME}/hf_models
 cp ${APP_HOME}/repos/srt-model-quantizing/awq/run-quant-awq.py ${APP_HOME}/hf_models
 ```
