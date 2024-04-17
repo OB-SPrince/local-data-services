@@ -71,6 +71,8 @@ sudo fallocate -l 512G ${APP_HOME}/hf_models/swapfile
 sudo chmod 600 ${APP_HOME}/hf_models/swapfile
 sudo mkswap ${APP_HOME}/hf_models/swapfile
 sudo swapon ${APP_HOME}/hf_models/swapfile
+mkdir ${APP_HOME}/hf_models/huggingface
+ln -s ${APP_HOME}/hf_models/huggingface ${HOME}/.cache/huggingface
 ```
 
 ## Setup repositories
@@ -175,8 +177,6 @@ pip install --upgrade -r requirements.txt
 cp quant_config.json ${APP_HOME}/hf_models
 cp run-quant-awq.py ${APP_HOME}/hf_models
 deactivate
-mkdir ${APP_HOME}/hf_models/huggingface
-ln -s ${APP_HOME}/hf_models/huggingface ${HOME}/.cache/huggingface
 ```
 
 ### Run the quant
