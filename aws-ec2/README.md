@@ -180,6 +180,8 @@ mkdir ${APP_HOME}/hf_models/huggingface
 ln -s ${APP_HOME}/hf_models/huggingface ${HOME}/.cache/huggingface
 ```
 
+### Run the quant
+
 ```bash
 # https://github.com/casper-hansen/AutoAWQ/blob/main/examples/quantize.py
 cd ${APP_HOME}/hf_models
