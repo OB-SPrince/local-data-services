@@ -170,8 +170,19 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
 
 ```bash
 cd ${APP_HOME}/repos/srt-model-quantizing/awq
-screen -S awq
-python -m venv ~/venv-awq
-source ~/venv-awq/bin/activate
+python -m venv ${HOME}/venv-awq
+source ${HOME}/venv-awq/bin/activate
 pip install --upgrade -r requirements.txt
+cp quant_config.json ${APP_HOME}/hf_models
+cp run-quant-awq.py ${APP_HOME}/hf_models
+deactivate
+mkdir ${APP_HOME}/hf_models/huggingface
+ln -s ${APP_HOME}/hf_models/huggingface ${HOME}/.cache/huggingface
+```
+
+```bash
+cd ${APP_HOME}/hf_models
+screen -S awq
+source ~/venv-awq/bin/activate
+
 ```
