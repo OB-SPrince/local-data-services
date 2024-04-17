@@ -28,6 +28,8 @@ sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt update
 sudo ubuntu-drivers install --gpgpu nvidia:550-server
 sudo apt install -y cuda-toolkit nvidia-dkms-550-server nvidia-fabricmanager-550 libnvidia-nscq-550 nvidia-utils-550-server nvtop
+echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+sudo sysctl vm.swappiness=10
 sudo reboot
 ```
 
@@ -65,11 +67,6 @@ sudo file -s /dev/nvme1n1
 sudo mkfs -t xfs /dev/nvme1n1
 sudo mount /dev/nvme1n1 ${APP_HOME}/hf_models
 sudo chown ubuntu:ubuntu ${APP_HOME}/hf_models
-#UUID=$(blkid -s UUID -o value /dev/nvme1n1)
-#echo "UUID=${UUID} ${APP_HOME}/hf_models xfs defaults,nofail  0 2" | sudo tee -a /etc/fstab
-echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-sudo sysctl vm.swappiness=10
-#!/bin/bash
 sudo fallocate -l 512G ${APP_HOME}/hf_models/swapfile
 sudo chmod 600 ${APP_HOME}/hf_models/swapfile
 sudo mkswap ${APP_HOME}/hf_models/swapfile
@@ -80,6 +77,8 @@ sudo swapon ${APP_HOME}/hf_models/swapfile
 
 ```bash
 cd ${APP_HOME}/repos
+git config --global credential.helper store
+git lfs install
 git clone https://github.com/SolidRusT/srt-model-quantizing.git
 git clone https://github.com/SolidRusT/srt-inference-backends.git
 git clone https://github.com/SolidRusT/srt-chat-clients.git
