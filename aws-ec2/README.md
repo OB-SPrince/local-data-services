@@ -170,13 +170,11 @@ curl http://inference.ca.obenv.net:5000/v1/chat/completions \
 ## (optional) AWQ Model Quantizing pipeline
 
 ```bash
-cd ${APP_HOME}/repos/srt-model-quantizing/awq
 python -m venv ${HOME}/venv-awq
 source ${HOME}/venv-awq/bin/activate
 pip install --upgrade -r requirements.txt
-cp quant_config.json ${APP_HOME}/hf_models
-cp run-quant-awq.py ${APP_HOME}/hf_models
-deactivate
+cp ${APP_HOME}/repos/srt-model-quantizing/awq/quant_config.json ${APP_HOME}/hf_models
+cp ${APP_HOME}/repos/srt-model-quantizing/awq/run-quant-awq.py ${APP_HOME}/hf_models
 ```
 
 ### Run the quant
@@ -187,4 +185,5 @@ cd ${APP_HOME}/hf_models
 screen -S awq
 source ~/venv-awq/bin/activate
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python run-quant-awq.py
+deactivate
 ```
