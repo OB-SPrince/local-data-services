@@ -175,6 +175,7 @@ source ${HOME}/venv-awq/bin/activate
 pip install --upgrade -r ${APP_HOME}/repos/srt-model-quantizing/awq/requirements.txt
 cp ${APP_HOME}/repos/srt-model-quantizing/awq/quant_config.json ${APP_HOME}/hf_models
 cp ${APP_HOME}/repos/srt-model-quantizing/awq/run-quant-awq.py ${APP_HOME}/hf_models
+deactivate
 ```
 
 ### Run the quant
@@ -183,7 +184,7 @@ cp ${APP_HOME}/repos/srt-model-quantizing/awq/run-quant-awq.py ${APP_HOME}/hf_mo
 # https://github.com/casper-hansen/AutoAWQ/blob/main/examples/quantize.py
 cd ${APP_HOME}/hf_models
 screen -S awq
-source ~/venv-awq/bin/activate
-PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python run-quant-awq.py
+source ${HOME}/venv-awq/bin/activate
+python run-quant-awq.py --model_path "nbeerbower/MaidFlameSoup-7B" --quant_path "MaidFlameSoup-7B-AWQ"
 deactivate
 ```
