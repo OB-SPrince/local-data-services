@@ -1,17 +1,16 @@
 version: '3.8'
 
 services:
-  redis:
-    #image: redis:6.2.6 # Specific version
-    image: redis:latest
+  valkey:
+    image: valkey/valkey:unstable
     volumes:
-      - redis-data:/data
+      - valkey-data:/data
     ports:
       - 6379:6379
     networks:
       - data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,7 +29,7 @@ services:
     networks:
       - data
     depends_on:
-      - redis
+      - valkey
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d dbname"]
       interval: 10s
@@ -50,7 +49,7 @@ services:
     networks:
       - data
     depends_on:
-      - redis
+      - valkey
       - postgres
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
@@ -59,7 +58,7 @@ services:
       retries: 5
 
 volumes:
-  redis-data:
+  valkey-data:
   postgres-data:
   mongo-data:
 
