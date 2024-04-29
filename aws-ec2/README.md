@@ -86,87 +86,6 @@ git clone https://github.com/SolidRusT/srt-inference-backends.git
 git clone https://github.com/SolidRusT/srt-chat-clients.git
 ```
 
-## (optional) vLLM installation
-
-```bash
-cd ${APP_HOME}/repos
-pyenv local 3.11
-python -m venv ~/venv-vllm
-source ~/venv-vllm/bin/activate
-pip install vllm wheel
-MAX_JOBS=4 pip install flash-attn --no-build-isolation
-deactivate
-```
-
-### Running vLLM
-
-```bash
-source ~/venv-vllm/bin/activate
-python -m vllm.entrypoints.openai.api_server \
---port 5000 \
---download-dir /opt/openbet/inference/hf_models \
---model cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
---tokenizer cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
---tokenizer-mode auto \
---dtype bfloat16 \
---api-key token-abc123 \
---swap-space 24 \
---gpu-memory-utilization 0.98 \
---max-model-len 31104
-deactivate
-```
-
-### Running vLLM multi-GPU
-
-```bash
-source ~/venv-vllm/bin/activate
-python -m vllm.entrypoints.openai.api_server \
---port 5000 \
---download-dir /opt/openbet/inference/hf_models \
---model cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
---tokenizer cognitivecomputations/dolphin-2.8-mistral-7b-v02 \
---tokenizer-mode auto \
---dtype float32 \
---api-key token-abc123 \
---swap-space 24 \
---worker-use-ray \
---tensor-parallel-size 4
-
-deactivate
-```
-
-### Running vLLM multi-GPU Hermes
-
-```bash
-source ~/venv-vllm/bin/activate
-python -m vllm.entrypoints.openai.api_server \
---port 5000 \
---download-dir /opt/openbet/inference/hf_models \
---model NousResearch/Hermes-2-Pro-Mistral-7B \
---tokenizer NousResearch/Hermes-2-Pro-Mistral-7B \
---tokenizer-mode auto \
---dtype float32 \
---api-key token-abc123 \
---swap-space 24 \
---worker-use-ray \
---tensor-parallel-size 4
-
-deactivate
-```
-
-### Run the tests
-
-```bash
-curl http://inference.ca.obenv.net:5000/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer token-abc123" \
-  -d '{
-     "model": "cognitivecomputations/dolphin-2.8-mistral-7b-v02",
-     "messages": [{"role": "user", "content": "Holy wow, my cool AI friend from the future! This is an inference test!"}],
-     "temperature": 0.7
-   }'
-```
-
 ## (optional) AWQ Model Quantizing pipeline
 
 ```bash
@@ -182,9 +101,18 @@ deactivate
 
 ```bash
 # https://github.com/casper-hansen/AutoAWQ/blob/main/examples/quantize.py
-cd ${APP_HOME}/hf_models
+bash s3/ready-up.sh
+cd ${APP_HOME}
 screen -S awq
+sudo nvidia-smi -pm 1 -i 0
+
 source ${HOME}/venv-awq/bin/activate
-python run-quant-awq.py --model_path "nbeerbower/MaidFlameSoup-7B" --quant_path "MaidFlameSoup-7B-AWQ"
+pip install --upgrade -r ${APP_HOME}/repos/srt-model-quantizing/awq/requirements.txt
+huggingface-cli login --add-to-git-credential  --token ${HF_TOKEN}
+alias quant-awq="bash ${APP_HOME}/repos/srt-model-quantizing/awq/quant-awq.sh"
+
+quant-awq Undi95 Meta-Llama-3-8B-hf
+
+#qant-awq.py --model_path "nbeerbower/MaidFlameSoup-7B" --quant_path "MaidFlameSoup-7B-AWQ"
 deactivate
 ```
